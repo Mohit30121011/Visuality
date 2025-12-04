@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { HistoryItem } from '../types';
 
@@ -91,10 +90,12 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ history, onLoadItem, o
               className="group relative bg-white/[0.03] hover:bg-white/[0.05] border border-white/5 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:border-white/10 flex flex-col md:flex-row items-start md:items-center gap-6"
             >
               {/* Icon/Thumbnail */}
-              <div className={`w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center border border-white/10 ${
+              <div className={`w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden ${
                 item.type === 'image' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-emerald-500/10 text-emerald-400'
               }`}>
-                {item.type === 'image' ? (
+                {item.type === 'image' && item.thumbnail ? (
+                    <img src={item.thumbnail} alt="Analysis Source" className="w-full h-full object-cover" />
+                ) : item.type === 'image' ? (
                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 ) : (
                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>

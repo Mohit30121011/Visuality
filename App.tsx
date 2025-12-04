@@ -14,6 +14,16 @@ import { analyzeText } from './services/textService';
 import { AnalysisResult, TextAnalysisResult, AppState, UploadState, TextState, User, SubscriptionTier, ViewMode, HistoryItem } from './types';
 import { TiltCard } from './components/TiltCard';
 
+// Helper to convert file to Base64 Data URI for persistence
+const fileToDataUri = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
 const App: React.FC = () => {
   // Global Mode State
   const [mode, setMode] = useState<'image' | 'text'>('image');
@@ -172,12 +182,24 @@ const App: React.FC = () => {
     }
   }, [user?.email]);
 
+  // Persist User Data (Credits, Plan) whenever it changes
+  useEffect(() => {
+    if (user?.email) {
+      localStorage.setItem(`visuality_user_${user.email}`, JSON.stringify(user));
+    }
+  }, [user]);
+
   const saveToHistory = (item: HistoryItem) => {
     setHistory(prev => {
       const newHistory = [item, ...prev];
       if (user?.email) {
-        // Save immediately to user-specific key
-        localStorage.setItem(`visuality_history_${user.email}`, JSON.stringify(newHistory));
+        // Save immediately to user-specific key with error handling for quota
+        try {
+          localStorage.setItem(`visuality_history_${user.email}`, JSON.stringify(newHistory));
+        } catch (e) {
+          console.error("Storage quota exceeded, could not save history", e);
+          // Optional: Could implement logic to remove oldest item and retry
+        }
       }
       return newHistory;
     });
@@ -196,7 +218,8 @@ const App: React.FC = () => {
     if (item.type === 'image') {
       setMode('image');
       setImageResult(item);
-      setUploadState({ file: null, previewUrl: null }); 
+      // Use stored thumbnail as preview if available
+      setUploadState({ file: null, previewUrl: item.thumbnail || null }); 
     } else {
       setMode('text');
       setTextResult(item);
@@ -214,15 +237,35 @@ const App: React.FC = () => {
   };
 
   const handleLogin = (email: string, name?: string, avatarUrl?: string) => {
-    setUser({
-      name: name || email.split('@')[0] || 'Analyst',
-      email: email,
-      avatarUrl: avatarUrl,
-      plan: 'Free',
-      credits: 5,
-      maxCredits: 5,
-      joinedAt: new Date().toISOString()
-    });
+    // Check for existing user data in localStorage
+    const storageKey = `visuality_user_${email}`;
+    const storedData = localStorage.getItem(storageKey);
+    
+    let newUser: User;
+
+    if (storedData) {
+        // Restore credits and plan from storage
+        const parsed = JSON.parse(storedData);
+        newUser = {
+            ...parsed,
+            name: name || parsed.name,
+            email: email,
+            avatarUrl: avatarUrl || parsed.avatarUrl
+        };
+    } else {
+        // New user initialization
+        newUser = {
+            name: name || email.split('@')[0] || 'Analyst',
+            email: email,
+            avatarUrl: avatarUrl,
+            plan: 'Free',
+            credits: 5,
+            maxCredits: 5,
+            joinedAt: new Date().toISOString()
+        };
+    }
+    
+    setUser(newUser);
     setIsLoggedIn(true);
   };
 
@@ -336,6 +379,15 @@ const App: React.FC = () => {
 
   const handleFileSelect = async (file: File) => {
     if (!checkCredits()) return;
+
+    // Convert to Base64 to store source in history
+    let base64Image = "";
+    try {
+        base64Image = await fileToDataUri(file);
+    } catch (e) {
+        console.error("Failed to process file for history", e);
+    }
+
     analysisScope.current += 1;
     const currentScope = analysisScope.current;
     const objectUrl = URL.createObjectURL(file);
@@ -349,7 +401,11 @@ const App: React.FC = () => {
       if (analysisScope.current !== currentScope) return;
       if (progressInterval.current) clearInterval(progressInterval.current);
       setProgress(100);
-      const historyItem: HistoryItem = { ...result, type: 'image' };
+      const historyItem: HistoryItem = { 
+        ...result, 
+        type: 'image',
+        thumbnail: base64Image // Store full source image
+      };
       saveToHistory(historyItem);
       setTimeout(() => {
         if (analysisScope.current !== currentScope) return;
@@ -411,7 +467,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      if (uploadState.previewUrl) {
+      if (uploadState.previewUrl && !uploadState.previewUrl.startsWith('data:')) {
         URL.revokeObjectURL(uploadState.previewUrl);
       }
     };
