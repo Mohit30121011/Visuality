@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { TextAnalysisResult } from '../../types';
 import { ScoreGauge } from '../ScoreGauge';

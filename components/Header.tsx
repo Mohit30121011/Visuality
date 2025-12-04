@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface HeaderProps {
@@ -62,11 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="flex flex-col justify-center">
               <span className="text-xl font-bold text-white tracking-tight leading-none group-hover:opacity-100 transition-opacity">
-                VISU
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">A</span>
-                L
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">I</span>
-                TY
+                VISU<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">A</span>L<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">I</span>TY
               </span>
               <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-0.5">AI Forensics</span>
             </div>

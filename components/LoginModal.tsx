@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 
 interface LoginModalProps {
@@ -195,7 +194,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
         {/* Header */}
         <div className="mt-2 mb-8 text-center relative z-10">
             <div className="w-14 h-14 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl mx-auto mb-5 flex items-center justify-center border border-white/10 shadow-lg group-hover:scale-105 transition-transform duration-300">
-                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-400">IO</span>
+                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-400">V</span>
             </div>
             <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
                 {mode === 'signin' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : mode === 'verify' ? 'Check Inbox' : 'Reset Password'}

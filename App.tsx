@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { FileUpload } from './components/FileUpload';
@@ -486,11 +485,11 @@ const App: React.FC = () => {
                 <div className="space-y-6">
                   {mode === 'image' ? (
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white drop-shadow-2xl">
-                      VISU<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">A</span>L<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">I</span>TY <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">FORENSICS</span>
+                      VISU<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">A</span>L<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">I</span>TY <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">DETECTOR</span>
                     </h1>
                   ) : (
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white drop-shadow-2xl">
-                      LINGUISTIC <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">FORENSICS</span>
+                      VISU<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">A</span>L<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">I</span>TY LINGUISTICS
                     </h1>
                   )}
                   
@@ -589,7 +588,7 @@ const App: React.FC = () => {
             <a href="#" className="hover:text-white transition-colors">System Status</a>
         </div>
         <p className="text-slate-600 text-[10px] max-w-xl mx-auto px-4 leading-relaxed font-mono uppercase tracking-wide">
-            VISUALITY &copy; {new Date().getFullYear()}. PROBABILISTIC ANALYSIS ONLY. NOT LEGAL EVIDENCE.
+            VISUALITY AI &copy; {new Date().getFullYear()}. PROBABILISTIC ANALYSIS ONLY. NOT LEGAL EVIDENCE.
         </p>
       </footer>
     </div>
