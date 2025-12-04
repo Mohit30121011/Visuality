@@ -1,0 +1,5 @@
+{
+  "name": "Visuality",
+  "description": "A professional-grade forensic tool utilizing AI to analyze images and text for signs of generative synthesis versus natural content.",
+  "requestFramePermissions": []
+}
