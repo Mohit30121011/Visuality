@@ -53,16 +53,8 @@ const App: React.FC = () => {
   const smoothMouseRef = useRef({ x: 0, y: 0 });
   const requestRef = useRef<number>(0);
 
-  // History State
-  const [history, setHistory] = useState<HistoryItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('visuality_history');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.warn("Failed to parse history from local storage", e);
-      return [];
-    }
-  });
+  // History State - Initialize empty, managed by useEffect based on User
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
   // Linear Interpolation Helper
   const lerp = (start: number, end: number, factor: number) => {
@@ -159,18 +151,44 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Persist history
+  // Load History when User changes
   useEffect(() => {
-    localStorage.setItem('visuality_history', JSON.stringify(history));
-  }, [history]);
+    if (user?.email) {
+      try {
+        const key = `visuality_history_${user.email}`;
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          setHistory(JSON.parse(saved));
+        } else {
+          setHistory([]);
+        }
+      } catch (e) {
+        console.warn("Failed to parse history from local storage", e);
+        setHistory([]);
+      }
+    } else {
+      // Clear history view when logged out
+      setHistory([]);
+    }
+  }, [user?.email]);
 
   const saveToHistory = (item: HistoryItem) => {
-    setHistory(prev => [item, ...prev]);
+    setHistory(prev => {
+      const newHistory = [item, ...prev];
+      if (user?.email) {
+        // Save immediately to user-specific key
+        localStorage.setItem(`visuality_history_${user.email}`, JSON.stringify(newHistory));
+      }
+      return newHistory;
+    });
   };
 
   const handleClearHistory = () => {
     if (confirm('Are you sure you want to clear all analysis history?')) {
       setHistory([]);
+      if (user?.email) {
+        localStorage.removeItem(`visuality_history_${user.email}`);
+      }
     }
   };
 
@@ -400,16 +418,16 @@ const App: React.FC = () => {
   }, [uploadState.previewUrl]);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-white/20 overflow-x-hidden cursor-none">
-      {/* Custom Cursor Elements */}
+    <div className="min-h-screen flex flex-col font-sans selection:bg-white/20 overflow-x-hidden md:cursor-none cursor-auto">
+      {/* Custom Cursor Elements - Hidden on mobile */}
       <div 
         ref={cursorDotRef}
-        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:block"
         style={{ transform: 'translate(-50%, -50%)', willChange: 'transform' }}
       ></div>
       <div 
         ref={cursorRingRef}
-        className="fixed top-0 left-0 w-8 h-8 border border-white/40 rounded-full pointer-events-none z-[9998] transition-opacity duration-300 ease-out"
+        className="fixed top-0 left-0 w-8 h-8 border border-white/40 rounded-full pointer-events-none z-[9998] transition-opacity duration-300 ease-out hidden md:block"
         style={{ transform: 'translate(-50%, -50%)', willChange: 'transform' }}
       ></div>
 
